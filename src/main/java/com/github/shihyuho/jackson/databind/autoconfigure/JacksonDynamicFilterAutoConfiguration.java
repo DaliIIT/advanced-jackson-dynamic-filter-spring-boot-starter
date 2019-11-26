@@ -1,11 +1,11 @@
 package com.github.shihyuho.jackson.databind.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.shihyuho.jackson.databind.DynamicFilterMixIn;
-import com.github.shihyuho.jackson.databind.DynamicFilterProvider;
-import com.github.shihyuho.jackson.databind.DynamicFilterResponseBodyAdvice;
-import com.github.shihyuho.jackson.databind.resolver.DynamicFilterResolver;
-import lombok.RequiredArgsConstructor;
+
+import com.github.shihyuho.jackson.databind.autoconfigure.dynamicFilter.DynamicFilterMixIn;
+import com.github.shihyuho.jackson.databind.autoconfigure.dynamicFilter.DynamicFilterProvider;
+import com.github.shihyuho.jackson.databind.autoconfigure.dynamicFilter.DynamicFilterResponseBodyAdvice;
+import com.github.shihyuho.jackson.databind.autoconfigure.dynamicFilter.resolver.DynamicFilterResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,9 +18,13 @@ import java.util.Map;
 
 @EnableConfigurationProperties(JacksonDynamicFilterProperties.class)
 @Configuration
-@RequiredArgsConstructor
 @Slf4j
 public class JacksonDynamicFilterAutoConfiguration {
+
+  public JacksonDynamicFilterAutoConfiguration(ListableBeanFactory factory, JacksonDynamicFilterProperties properties) {
+    this.factory = factory;
+    this.properties = properties;
+  }
 
   private final ListableBeanFactory factory;
   private final JacksonDynamicFilterProperties properties;
@@ -46,7 +50,7 @@ public class JacksonDynamicFilterAutoConfiguration {
           Class<?> clz = Class.forName(name);
           advice.addResolvers((DynamicFilterResolver) clz.newInstance());
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-          log.error("Failed creating a new instance of the resolver class: {}", name, e);
+//          log.error("Failed creating a new instance of the resolver class: {}", name, e);
           if (properties.isFailFast()) {
             throw e;
           }
